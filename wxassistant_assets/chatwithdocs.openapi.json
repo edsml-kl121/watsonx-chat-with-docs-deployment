@@ -1,0 +1,260 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+      "description": "API for making predictions using a specified deployment in IBM Watson Machine Learning.",
+      "title": "IBM Watson Machine Learning AI Service API",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "https://us-south.ml.cloud.ibm.com",
+        "description": "IBM Machine Learning Deployment AI Service"
+      }
+    ],
+    "components": {
+      "securitySchemes": {
+        "oauth2": {
+          "type": "oauth2",
+          "flows": {
+            "x-apikey": {
+              "tokenUrl": "https://iam.cloud.ibm.com/identity/token",
+              "grantType": "urn:ibm:params:oauth:grant-type:apikey",
+              "secretKeys": ["apikey"],
+              "paramKeys": [],
+              "scopes": {}
+            }
+          }
+        }
+      }
+    },
+    "security": [
+      {
+        "oauth2": []
+      }
+    ],
+    "paths": {
+      "/ml/v4/deployments/{deployment_id}/ai_service": {
+        "post": {
+          "description": "Make a prediction using the specified deployment's AI service",
+          "parameters": [
+            {
+              "name": "version",
+              "in": "query",
+              "description": "Release date of the version of the API you want to use. Specify dates in YYYY-MM-DD format. The current version is `2023-05-01`.",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "deployment_id",
+              "in": "path",
+              "description": "The ID of the deployment to use for the AI service.",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "role": {
+                            "type": "string",
+                            "enum": ["system", "user", "assistant"],
+                            "description": "The role of the message author"
+                          },
+                          "content": {
+                            "type": "string",
+                            "description": "The content of the message"
+                          }
+                        },
+                        "required": ["role", "content"]
+                      }
+                    }
+                  },
+                  "required": ["messages"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "AI Service Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "choices": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "finish_reason": {
+                              "type": "string",
+                              "description": "Reason why the model stopped generating text",
+                              "example": "stop"
+                            },
+                            "index": {
+                              "type": "integer",
+                              "description": "Index of the choice in the array",
+                              "example": 0
+                            },
+                            "message": {
+                              "type": "object",
+                              "properties": {
+                                "content": {
+                                  "type": "string",
+                                  "description": "The generated content",
+                                  "example": "พนักงานทั่วไปเข้าทำงานตอน 08.30 น."
+                                },
+                                "role": {
+                                  "type": "string",
+                                  "description": "The role associated with the message",
+                                  "example": "assistant"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "created": {
+                        "type": "integer",
+                        "description": "Unix timestamp of when the response was created",
+                        "example": 1747627710
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "ISO timestamp of when the response was created",
+                        "example": "2025-05-19T04:08:32.453Z"
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "Unique identifier for the completion",
+                        "example": "chatcmpl-bc3525289342797b2ee56401964fd614"
+                      },
+                      "model": {
+                        "type": "string",
+                        "description": "The model used for completion",
+                        "example": "mistralai/mistral-medium-2505"
+                      },
+                      "model_id": {
+                        "type": "string",
+                        "description": "Identifier for the model",
+                        "example": "mistralai/mistral-medium-2505"
+                      },
+                      "model_version": {
+                        "type": "string",
+                        "description": "Version of the model used",
+                        "example": "1.0.0"
+                      },
+                      "object": {
+                        "type": "string",
+                        "description": "Type of object returned",
+                        "example": "chat.completion"
+                      },
+                      "system": {
+                        "type": "object",
+                        "properties": {
+                          "warnings": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "Warning identifier",
+                                  "example": "disclaimer_warning"
+                                },
+                                "message": {
+                                  "type": "string",
+                                  "description": "Warning message",
+                                  "example": "This model is a Non-IBM Product governed by a third-party license..."
+                                },
+                                "more_info": {
+                                  "type": "string",
+                                  "description": "URL with more information",
+                                  "example": "https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-models.html?context=wx"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "usage": {
+                        "type": "object",
+                        "properties": {
+                          "completion_tokens": {
+                            "type": "integer",
+                            "description": "Number of tokens in the completion",
+                            "example": 78
+                          },
+                          "prompt_tokens": {
+                            "type": "integer",
+                            "description": "Number of tokens in the prompt",
+                            "example": 2459
+                          },
+                          "total_tokens": {
+                            "type": "integer",
+                            "description": "Total number of tokens used",
+                            "example": 2537
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "trace": {
+                        "type": "string",
+                        "example": "1f34b21071b4d52ac75fb680518fcfcb"
+                      },
+                      "errors": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "string",
+                              "example": "score_processing_failure"
+                            },
+                            "message": {
+                              "type": "string",
+                              "example": "'str' object has no attribute 'get'"
+                            }
+                          }
+                        }
+                      },
+                      "status_code": {
+                        "type": "integer",
+                        "example": 400
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
